@@ -1,0 +1,42 @@
+pipeline {
+    agent any
+
+    stages {
+
+        stage('Checkout') {
+            steps {
+                echo 'Downloading source code'
+                checkout scm
+            }
+        }
+
+        stage('Build') {
+            steps {
+                bat 'mvn clean compile'
+            }
+        }
+
+        stage('Test') {
+            steps {
+                bat 'mvn test'
+            }
+        }
+
+        stage('Package') {
+            steps {
+                bat 'mvn package'
+            }
+        }
+    }
+
+    post {
+        success {
+            archiveArtifacts artifacts: 'target/*.tgz'
+            echo 'CI/CD Pipeline Successful!'
+        }
+
+        failure {
+            echo 'Pipeline Failed!'
+        }
+    }
+}
